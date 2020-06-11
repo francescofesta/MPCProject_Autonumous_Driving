@@ -6,9 +6,5 @@ goalPose=[22.9,27.8,pi];
 plot(planner)
 
 poses = interpolate(refPath);
-trajectory(egoVehicle,poses(:,1:2),30);
-
-plot(scenario,'Waypoints','on','RoadCenters','on')
-while advance(scenario)
-    pause(0.1)
-end
+trajectory(Car,poses,30);
+plot(scenario)
