@@ -1,7 +1,7 @@
 %% CONFIGURAZIONE
 mapWidth = 100;
 mapLength = 100;
-costVal = 0.5;
+costVal = 0.15;
 cellSize = 0.2;
 
 costmap = vehicleCostmap(mapWidth,mapLength,costVal,'CellSize',cellSize,'InflationRadius',1.5);
