@@ -67,8 +67,7 @@ egoVehicle = vehicle(scenario, ...
 
 %% boundaries
 rB=roadBoundaries(scenario);
-rb_mat_ext= rB{:,1};
-rb_mat_int= rB{:,2};
-rb_no_terz_ext=rb_mat_ext(:,1:2);
-rb_no_terz_int=rb_mat_int(:,1:2);
-
+rb_mat_ext_car= rB_car{:,1};
+rb_mat_int_car= rB_car{:,2};
+rb_no_terz_ext_car=rb_mat_ext_car(:,1:2);
+rb_no_terz_int_car=rb_mat_int_car(:,1:2);

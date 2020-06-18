@@ -34,11 +34,10 @@ goalPose=[22.9,27.8,pi];
 x0=[startPose 0];
 u0=[0 0];
 
-params.Obstacle=ObstaclePosition(scenario);
-params.Lane.rb_mat_ext=rb_mat_ext;
-params.Lane.rb_mat_int=rb_mat_int;
-params.Vehicle.Length=egoVehicle.Length;
-nlobj.Model.NumberOfParameters = 3;
+params=ObstaclePosition(scenario);
+params(
+params={params; rb_mat_ext; rb_mat_int; egoVehicle.Length};
+nlobj.Model.NumberOfParameters = 4;
 
 %% Modello di predizione
 
@@ -54,7 +53,7 @@ nlobj.Optimization.ReplaceStandardCost = true;
 nlobj.Optimization.UseSuboptimalSolution = true;
 
 %% Vincoli anti collisione e mantenimento carreggiata
-if (size(params.Obstacle.pos,2)>1)
+if (size(params.pos,2)>1)
     nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
 end
 
@@ -65,7 +64,6 @@ nlobj.Weights.ManipulatedVariablesRate = [5, 10];
 %% Validazione
 
 validateFcns(nlobj,x0,u0,[],{params});
-%rendere params una cell array diminuendo il numero di livelli
 
 
 

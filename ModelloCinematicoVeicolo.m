@@ -1,7 +1,6 @@
 function xdot = ModelloCinematicoVeicolo(x,u,params)
-    
-    L = egoVehicle.Length;
 
+    L=params.Vehicle.Length;
     x_update = [cos(x(3))*x(4);
                 sin(x(3))*x(4);
                 (tan(u(2))/L)*x(4);
