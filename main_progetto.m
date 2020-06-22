@@ -30,7 +30,7 @@ nlobj.ManipulatedVariables(2).RateMax = pi/30*Ts;
 
 startPose=scenario.Actors(1,6).Position(1,:);
 %startPose=[12 48.0137366185146 0];
-goalPose=[22.9,27.8,pi];
+goalPose=[22.9,27.8,pi,0];
 %condizioni iniziali
 x0=[startPose 0];
 u0=[0 0];
@@ -40,14 +40,16 @@ params.Lane_rb_mat_ext=rb_mat_ext;
 params.Lane_rb_mat_int=rb_mat_int;
 params.Vehicle_Length=egoVehicle.Length;
 nlobj.Model.NumberOfParameters = 1;
+ostacoli.pos=params.pos;
+ostacoli.dim=params.length/2;
 
 %% Modello di predizione
 
 nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 83;
-nlobj.ControlHorizon = 83;
+nlobj.PredictionHorizon = 84;
+nlobj.ControlHorizon = 84;
 %% Funzione costo
 
 nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) Ts*sum(U(1:p,1));
@@ -68,6 +70,18 @@ nlobj.Weights.ManipulatedVariablesRate = [5, 10];
 validateFcns(nlobj,x0,u0,[],{params});
 %Problemi con collision avoidance su troppe colonne
 
+%% Pianificatore di traiettorie
+% 
+options = nlmpcmoveopt;
+options.parameters = {params};
+% Trova le prossime p mosse
+
+tic;
+[~,~,info] = nlmpcmove(nlobj,x0,u0,goalPose,[],options);
+toc;  % tempo impiegato
+
+% Stampa i risultati:
+plotData_nostro(x0,u0,goalPose,Ts,info,nlobj, ostacoli)
 
 
 

@@ -1,4 +1,4 @@
-function plotData(x0,u0,ref,Ts,info,nlobj, ostacoli)
+function plotData_nostro(x0,u0,ref,Ts,info,nlobj, ostacoli)
     ost = ostacoli;
     % Robot path
     close all;
@@ -9,8 +9,9 @@ function plotData(x0,u0,ref,Ts,info,nlobj, ostacoli)
     scatter(x0(1),x0(2),'g','filled');
     scatter(ref(1),ref(2),'r','filled');
     if (length(ost.pos)>1)
-   
-        rectangle('Position',[ost.pos(1)-ost.dim, ost.pos(2)-ost.dim, 2*ost.dim, 2*ost.dim],'Curvature',[1,1],'FaceColor',[0.5,0.5,0.5]);
+       for i:1:size(ost.pos,1)
+        rectangle('Position',[ost.pos(i,1)-ost.dim(1,1), ost.pos(i,2)-ost.dim(1,1), 2*ost.dim(1,1), 2*ost.dim(1,1)],'Curvature',[1,1],'FaceColor',[0.5,0.5,0.5]);
+       end
     end
     % Rimuovi il commento se vuoi vedere i vettori di theta
     % quiver(info.Xopt(:,1),info.Xopt(:,2),0.1*cos(info.Xopt(:,3)),0.1*sin(info.Xopt(:,3)));
@@ -29,7 +30,7 @@ function plotData(x0,u0,ref,Ts,info,nlobj, ostacoli)
 % 
 %     subplot(5,1,2);
 %     plot(0:Ts:nlobj.PredictionHorizon*Ts, rad2deg(info.MVopt(:,2)));
-%     ylabel('gamma (°)')
+%     ylabel('gamma (Â°)')
 %     grid on;
 %     ylim([-50 50]);
 % 
@@ -48,7 +49,7 @@ function plotData(x0,u0,ref,Ts,info,nlobj, ostacoli)
 % 
 %     subplot(5,1,5);
 %     plot(0:Ts:nlobj.PredictionHorizon*Ts, rad2deg(info.Xopt(:,3)));
-%     ylabel('theta (°)')
+%     ylabel('theta (Â°)')
 %     yline(rad2deg(ref(3)),'-.r');
 %     grid on;
 end
