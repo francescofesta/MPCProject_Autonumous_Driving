@@ -17,8 +17,8 @@ ny = 4;
 nu = 2;
 nlobj = nlmpc(nx,ny,nu);
 
-Ts=scenario.SampleTime;
-p=60;
+Ts=1;%scenario.SampleTime;
+p=10;
 
 %Vincoli di controllo
 %Throttle:
@@ -30,7 +30,7 @@ nlobj.ManipulatedVariables(2).RateMax = pi/30*Ts;
 
 startPose=scenario.Actors(1,6).Position(1,:);
 %startPose=[12 48.0137366185146 0];
-goalPose=[22.9,27.8,pi,0];
+goalPose=[10,40,pi,5];
 %condizioni iniziali
 x0=[startPose 0];
 u0=[0 0];
@@ -48,12 +48,12 @@ ostacoli.dim=params.length/2;
 nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 84;
-nlobj.ControlHorizon = 84;
+nlobj.PredictionHorizon = 15;
+nlobj.ControlHorizon = 15;
 %% Funzione costo
 
-nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) Ts*sum(U(1:p,1));
-nlobj.Optimization.ReplaceStandardCost = true;
+% nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) Ts*sum(U(1:p,1));
+% nlobj.Optimization.ReplaceStandardCost = true;
 nlobj.Optimization.UseSuboptimalSolution = true;
 
 %% Vincoli anti collisione e mantenimento carreggiata
@@ -62,8 +62,8 @@ if (size(params.pos,2)>1)
 end
 
 %% Pesi
-nlobj.Weights.OutputVariables = [15, 10, 8, 10];
-nlobj.Weights.ManipulatedVariablesRate = [5, 10];
+% nlobj.Weights.OutputVariables = [15, 10, 8, 10];
+% nlobj.Weights.ManipulatedVariablesRate = [10, 5];
 
 %% Validazione
 
