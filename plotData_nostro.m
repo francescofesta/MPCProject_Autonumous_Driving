@@ -1,9 +1,14 @@
-function plotData_nostro(x0,u0,ref,Ts,info,nlobj, ostacoli)
+function plotData_nostro(x0,u0,ref,Ts,info,nlobj, ostacoli, rb_mat_int, rb_mat_ext)
     ost = ostacoli;
     % Robot path
     close all;
     figure;
+    hold on
     plot(info.Xopt(:,1), info.Xopt(:,2),'bo')
+    plot(rb_mat_int(:,1),rb_mat_int(:,2))
+    plot(rb_mat_ext(:,1),rb_mat_ext(:,2))
+    
+   
     grid on
     hold on
     scatter(x0(1),x0(2),'g','filled');

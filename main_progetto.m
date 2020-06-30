@@ -22,15 +22,17 @@ p=10;
 
 %Vincoli di controllo
 %Throttle:
-nlobj.ManipulatedVariables(1).RateMin = -0.2*Ts;
-nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
+% nlobj.ManipulatedVariables(1).RateMin = -0.2*Ts;
+% nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
 %Steering angle:
-nlobj.ManipulatedVariables(2).RateMin = -pi/30*Ts;
-nlobj.ManipulatedVariables(2).RateMax = pi/30*Ts;
+% nlobj.ManipulatedVariables(2).RateMin = -pi/30*Ts;
+% nlobj.ManipulatedVariables(2).RateMax = pi/30*Ts;
+nlobj.ManipulatedVariables(1).Min = -10;
+nlobj.ManipulatedVariables(1).Max = 10;
 
 startPose=scenario.Actors(1,6).Position(1,:);
 %startPose=[12 48.0137366185146 0];
-goalPose=[10,40,pi,5];
+goalPose=[40,48,pi,5];
 %condizioni iniziali
 x0=[startPose 0];
 u0=[0 0];
@@ -62,7 +64,7 @@ if (size(params.pos,2)>1)
 end
 
 %% Pesi
-% nlobj.Weights.OutputVariables = [15, 10, 8, 10];
+% nlobj.Weights.OutputVariables = [10, 10, 2, 2];
 % nlobj.Weights.ManipulatedVariablesRate = [10, 5];
 
 %% Validazione
@@ -81,7 +83,8 @@ tic;
 toc;  % tempo impiegato
 
 % Stampa i risultati:
-plotData_nostro(x0,u0,goalPose,Ts,info,nlobj, ostacoli)
+
+plotData_nostro(x0,u0,goalPose,Ts,info,nlobj, ostacoli, rb_mat_int, rb_mat_ext)
 
 
 
