@@ -6,11 +6,11 @@ scenario_finale
 %x(1) - coordinata x
 %x(2) - coordinata y
 %x(3) - coordinata teta
-%x(4) - vehicle speed
+%x(4) - steering angle
 
 %variabili di attuazione:
-%u(1) - throttle (accelerazione)
-%u(2) - steering angle
+%u(1) - linear speed
+%u(2) - angular speed
 
 nx = 4;
 ny = 4;
@@ -50,8 +50,8 @@ ostacoli.dim=params.length/2;
 nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 15;
-nlobj.ControlHorizon = 15;
+nlobj.PredictionHorizon = 10;
+nlobj.ControlHorizon = 10;
 %% Funzione costo
 
 % nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) Ts*sum(U(1:p,1));
