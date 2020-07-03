@@ -15,18 +15,29 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
          end
      end
 
-     diff_int_x=reshape(diff_int_x,[],1);
-     diff_int_x=diff_int_x';
-     diff_int_y=reshape(diff_int_y,[],1);
-     diff_int_y=diff_int_y';
-     diff_int=[diff_int_x;diff_int_y];
-     dist_track_int=vecnorm(diff_int);
-     diff_ext_x=reshape(diff_ext_x,[],1);
-     diff_ext_x=diff_ext_x';
-     diff_ext_y=reshape(diff_ext_y,[],1);
-     diff_ext_y=diff_ext_y';
-     diff_ext=[diff_ext_x;diff_ext_y];
-     dist_track_ext=vecnorm(diff_ext);
+%      diff_int_x=reshape(diff_int_x,[],1);
+%      diff_int_x=diff_int_x';
+for i=2:1:10
+%      diff_int_x=diff_int_x(i,:);
+%      diff_int_y=diff_int_y(i,:);
+%      diff_int_y=reshape(diff_int_y,[],1);
+%      diff_int_y=diff_int_y';
+     diff_int=[diff_int_x(i,:);diff_int_y(i,:)];
+     dist_track_int=min(vecnorm(diff_int));
+     
+%      diff_ext_x=reshape(diff_ext_x,[],1);
+%      diff_ext_x=diff_ext_x';
+%      diff_ext_y=reshape(diff_ext_y,[],1);
+%      diff_ext_y=diff_ext_y';
+% %      diff_ext_x=diff_ext_x(2,:);
+% %      diff_ext_y=diff_ext_y(2,:);
+% % 
+% %      diff_ext=[diff_ext_x;diff_ext_y];
+% %      dist_track_ext(i)=vecnorm(diff_ext);
+          diff_ext=[diff_ext_x(i,:);diff_ext_y(i,:)];
+          dist_track_ext=min(vecnorm(diff_ext));
+
+end
      
       for i=1:1:size(dist_track_int,2)
          vincolo_int(:,i)=dist_track_int(:,i)'-treshold_lane;
@@ -57,8 +68,8 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
       
       vincolo_int=reshape(vincolo_int,[],1);
       vincolo_est=reshape(vincolo_est,[],1);
-      vincolo_int=vincolo_int(1:6:8400);
-      vincolo_est=vincolo_est(1:6:8400);
+      vincolo_int= min(vincolo_int(vincolo_int>0));
+      vincolo_est=min(vincolo_est(vincolo_est>0));
 %       vincolo_int_new(1)=vincolo_int(1);
 %       vincolo_est_new(1)=vincolo_est(1);
 %       
@@ -68,7 +79,8 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
 %       end
       
          %dist_track_int=norm(X(2:p+1,1:2)-rb_mat_int_flip(1,1:2))
-     treshold_obstacle=(params.length(1,1)/2)+(params.Vehicle_Length/2)*cos(X(2:p+1,3));
+%      treshold_obstacle=(params.length(1,1)/2)+(params.Vehicle_Length/2)*cos(X(2:p+1,3));
+treshold_obstacle=0.2;
       for i=1:1:size(params.pos,1)
         dist_obstacle(:,i)=vecnorm(X(2:p+1,1:2)-params.pos(i,:),2,2); 
         vincolo_ost(:,i)=dist_obstacle(:,i)-treshold_obstacle;
