@@ -4,34 +4,68 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
      rb_mat_int=params.Lane_rb_mat_int;
      rb_mat_int_flip=flip(rb_mat_int);
      treshold_lane=0.2+(params.Vehicle_Length/2)*cos(X(2:p+1,3));
-     for i=2:1:p
-         for j=1:1:84
-             diff_int_x(i,j)=X(i,1)-rb_mat_int_flip(j,1);
-             diff_int_y(i,j)=X(i,2)-rb_mat_int_flip(j,2);
-
-             
-             diff_ext_x(i,j)=X(i,1)-rb_mat_ext(j,1);
-             diff_ext_y(i,j)=X(i,2)-rb_mat_ext(j,2);
+     for i=1:1:84
+         if rb_mat_ext (i,1)<X(1,1)+10 && rb_mat_ext(i,1)>X(1,1)-10
+             rb_mat_ext(i,1)=rb_mat_ext(i,1);
+         else
+             rb_mat_ext(i,1)=0;
+         end
+     
+         if rb_mat_ext (i,2)<X(1,2)+10 && rb_mat_ext(i,2)>X(1,2)-10
+             rb_mat_ext(i,2)=rb_mat_ext(i,2);
+         else
+             rb_mat_ext(i,2)=0;
          end
      end
-
-     diff_int_x=reshape(diff_int_x,[],1);
-     diff_int_x=diff_int_x';
-     diff_int_y=reshape(diff_int_y,[],1);
-     diff_int_y=diff_int_y';
-     diff_int=[diff_int_x;diff_int_y];
-     dist_track_int=vecnorm(diff_int);
-     diff_ext_x=reshape(diff_ext_x,[],1);
-     diff_ext_x=diff_ext_x';
-     diff_ext_y=reshape(diff_ext_y,[],1);
-     diff_ext_y=diff_ext_y';
-     diff_ext=[diff_ext_x;diff_ext_y];
-     dist_track_ext=vecnorm(diff_ext);
      
-      for i=1:1:size(dist_track_int,2)
-         vincolo_int(:,i)=dist_track_int(:,i)'-treshold_lane;
-         vincolo_est(:,i)=dist_track_ext(:,i)'-treshold_lane;
-      end
+     for i=1:1:84
+         if rb_mat_int (i,1)<X(1,1)+10 && rb_mat_int(i,1)>X(1,1)-10
+             rb_mat_int(i,1)=rb_mat_int(i,1);
+         else
+             rb_mat_int(i,1)=0;
+         end
+     
+         if rb_mat_int (i,2)<X(1,2)+10 && rb_mat_int(i,2)>X(1,2)-10
+             rb_mat_int(i,2)=rb_mat_int(i,2);
+         else
+             rb_mat_int(i,2)=0;
+         end
+     end
+    rb_mat_int=rb_mat_int(:,1:2); 
+    rb_mat_ext=rb_mat_ext(:,1:2); 
+    rb_mat_int= rb_mat_int(all(rb_mat_int,2),:) ;
+    rb_mat_ext= rb_mat_ext(all(rb_mat_ext,2),:) ;
+     
+    
+     
+     
+%          for j=1:1:84
+%              diff_int_x(i,j)=X(1,1)-rb_mat_int_flip(j,1);
+%              diff_int_y(i,j)=X(i,2)-rb_mat_int_flip(j,2);
+% 
+%              
+%              diff_ext_x(i,j)=X(i,1)-rb_mat_ext(j,1);
+%              diff_ext_y(i,j)=X(i,2)-rb_mat_ext(j,2);
+%          end
+%      
+% 
+%      diff_int_x=reshape(diff_int_x,[],1);
+%      diff_int_x=diff_int_x';
+%      diff_int_y=reshape(diff_int_y,[],1);
+%      diff_int_y=diff_int_y';
+%      diff_int=[diff_int_x;diff_int_y];
+%      dist_track_int=vecnorm(diff_int);
+%      diff_ext_x=reshape(diff_ext_x,[],1);
+%      diff_ext_x=diff_ext_x';
+%      diff_ext_y=reshape(diff_ext_y,[],1);
+%      diff_ext_y=diff_ext_y';
+%      diff_ext=[diff_ext_x;diff_ext_y];
+%      dist_track_ext=vecnorm(diff_ext);
+     
+%       for i=1:1:size(dist_track_int,2)
+%          vincolo_int(:,i)=dist_track_int(:,i)'-treshold_lane;
+%          vincolo_est(:,i)=dist_track_ext(:,i)'-treshold_lane;
+%       end
          
     
      
@@ -55,10 +89,10 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
 %        
 %       end
       
-      vincolo_int=reshape(vincolo_int,[],1);
-      vincolo_est=reshape(vincolo_est,[],1);
-      vincolo_int=vincolo_int(1:6:8400);
-      vincolo_est=vincolo_est(1:6:8400);
+%       vincolo_int=reshape(vincolo_int,[],1);
+%       vincolo_est=reshape(vincolo_est,[],1);
+%       vincolo_int=vincolo_int(1:6:8400);
+%       vincolo_est=vincolo_est(1:6:8400);
 %       vincolo_int_new(1)=vincolo_int(1);
 %       vincolo_est_new(1)=vincolo_est(1);
 %       
@@ -75,11 +109,15 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
       end
       
       vincolo_ost=reshape(vincolo_ost,[],1);
-     cineq=[
-         -(vincolo_int);
-         -(vincolo_est);
+           cineq=[
+
          -(vincolo_ost);
             ];
+%      cineq=[
+%          -(vincolo_int);
+%          -(vincolo_est);
+%          -(vincolo_ost);
+%             ];
 %     r_safe = 2*params.Obstacle.length(1);
 %     
 % 

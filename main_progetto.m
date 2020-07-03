@@ -17,7 +17,7 @@ ny = 4;
 nu = 2;
 nlobj = nlmpc(nx,ny,nu);
 
-Ts=1;%scenario.SampleTime;
+Ts=0.1;%scenario.SampleTime;
 p=10;
 
 %Vincoli di controllo
@@ -32,7 +32,7 @@ nlobj.ManipulatedVariables(1).Max = 10;
 
 startPose=scenario.Actors(1,6).Position(1,:);
 %startPose=[12 48.0137366185146 0];
-goalPose=[40,48,pi,5];
+goalPose=[55,30,pi,5];
 %condizioni iniziali
 x0=[startPose 0];
 u0=[0 0];
@@ -50,8 +50,8 @@ ostacoli.dim=params.length/2;
 nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 10;
-nlobj.ControlHorizon = 10;
+nlobj.PredictionHorizon = 20;
+nlobj.ControlHorizon = 20;
 %% Funzione costo
 
 % nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) Ts*sum(U(1:p,1));
@@ -76,12 +76,13 @@ validateFcns(nlobj,x0,u0,[],{params});
 % 
 options = nlmpcmoveopt;
 options.parameters = {params};
+%%
 % Trova le prossime p mosse
 
 tic;
 [~,~,info] = nlmpcmove(nlobj,x0,u0,goalPose,[],options);
 toc;  % tempo impiegato
-
+%%
 % Stampa i risultati:
 
 plotData_nostro(x0,u0,goalPose,Ts,info,nlobj, ostacoli, rb_mat_int, rb_mat_ext)
