@@ -32,7 +32,7 @@ nlobj.ManipulatedVariables(1).Max = 10;
 
 startPose=scenario.Actors(1,6).Position(1,:);
 %startPose=[12 48.0137366185146 0];
-goalPose=[55,30,pi,5];
+goalPose=[35,55,pi,5];
 %condizioni iniziali
 x0=[startPose 0];
 u0=[0 0];

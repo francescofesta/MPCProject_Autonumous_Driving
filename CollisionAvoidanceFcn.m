@@ -3,7 +3,8 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
      rb_mat_ext=params.Lane_rb_mat_ext;
      rb_mat_int=params.Lane_rb_mat_int;
      rb_mat_int_flip=flip(rb_mat_int);
-     treshold_lane=0.2+(params.Vehicle_Length/2)*cos(X(2:p+1,3));
+%      treshold_lane=0.2+(params.Vehicle_Length/2)*cos(X(2:p+1,3));
+treshold_lane=0.5;
      for i=1:1:84
          if rb_mat_ext (i,1)<X(1,1)+10 && rb_mat_ext(i,1)>X(1,1)-10
              rb_mat_ext(i,1)=rb_mat_ext(i,1);
@@ -35,6 +36,23 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
     rb_mat_ext=rb_mat_ext(:,1:2); 
     rb_mat_int= rb_mat_int(all(rb_mat_int,2),:) ;
     rb_mat_ext= rb_mat_ext(all(rb_mat_ext,2),:) ;
+    
+    for i=1:1:size(rb_mat_int,1)
+        dist_track_int(:,i)=vecnorm(X(2:p+1,1:2)-rb_mat_int(i,:),2,2);
+        vincolo_int(:,i)=dist_track_int(:,i)-treshold_lane;
+    end
+    
+    vincolo_int=reshape(vincolo_int,[],1);
+    
+    for i=1:1:size(rb_mat_ext,1)
+        dist_track_ext(:,i)=vecnorm(X(2:p+1,1:2)-rb_mat_ext(i,:),2,2);
+        vincolo_ext(:,i)=dist_track_ext(:,i)-treshold_lane;
+    end
+    
+    vincolo_ext=reshape(vincolo_ext,[],1);
+    
+    
+    
      
     
      
@@ -110,7 +128,8 @@ function cineq = CollisionAvoidanceFcn(X,U,e,data,params)
       
       vincolo_ost=reshape(vincolo_ost,[],1);
            cineq=[
-
+               -vincolo_int;
+         -vincolo_ext;
          -(vincolo_ost);
             ];
 %      cineq=[
