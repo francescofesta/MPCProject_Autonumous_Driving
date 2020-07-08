@@ -16,6 +16,11 @@ end
 
 traiettoria_mat=[sim_time,poses_new,angle_new,velocity_new ]; 
 
+%% GENERAZIONE PLANT
+AdaptiveModelGen;
+%% CONTROLORE MPC
+mpc_designer;
+
 
 
 
