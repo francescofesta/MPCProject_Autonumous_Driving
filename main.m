@@ -27,7 +27,9 @@ ost_pos(:,3)=[];
 
 
 %% CONTROLORE MPC
+tic
 NLmpc;
+toc
 
 
 
