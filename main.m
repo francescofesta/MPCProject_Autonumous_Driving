@@ -4,7 +4,7 @@ scenario_finale;
 Costmap;
 RRT;
 pose_record=record(scenario);
-
+%% traiettoria
 sim_time={pose_record.SimulationTime};
 sim_time=cell2mat(sim_time');
 for i=1:1:size(pose_record,2)
@@ -15,11 +15,20 @@ for i=1:1:size(pose_record,2)
 end
 
 traiettoria_mat=[sim_time,poses_new,angle_new,velocity_new ]; 
+%% ostacoli
+ost=scenario.Actors(1,1:5);
 
-%% GENERAZIONE PLANT
-AdaptiveModelGen;
+for i=1:5
+    ost_pos(i,:)=ost(1,i).Position;
+    
+    ost_dim(i,:)=ost(1,i).Length;
+end
+ost_pos(:,3)=[];
+
+
 %% CONTROLORE MPC
-mpc_designer;
+NLmpc;
+
 
 
 

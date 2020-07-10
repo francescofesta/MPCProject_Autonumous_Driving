@@ -18,14 +18,14 @@ Ts=0.01;%scenario.SampleTime;
 p=10;
 
 %Vincoli di controllo
-%Throttle:
+%Velocità:
 % nlobj.ManipulatedVariables(1).RateMin = -0.2*Ts;
 % nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
-%Steering angle:
-% nlobj.ManipulatedVariables(2).RateMin = -pi/30*Ts;
-% nlobj.ManipulatedVariables(2).RateMax = pi/30*Ts;
-%nlobj.ManipulatedVariables(1).Min = -10;
-%nlobj.ManipulatedVariables(1).Max = 10;
+%Velocità angolare:
+% nlobj.ManipulatedVariables(2).RateMin = -30*Ts;
+% nlobj.ManipulatedVariables(2).RateMax = 30*Ts;
+% nlobj.ManipulatedVariables(2).Min = -30;
+% nlobj.ManipulatedVariables(2).Max = 30;
 
 startPose=scenario.Actors(1,6).Position(1,:);
 %startPose=[12 48.0137366185146 0];
@@ -35,20 +35,20 @@ startPose=scenario.Actors(1,6).Position(1,:);
 x=traiettoria_mat(1,2:5);
 u=[0 0];
 
-% params=ObstaclePosition(scenario);
-% params.Lane_rb_mat_ext=rb_mat_ext;
-% params.Lane_rb_mat_int=rb_mat_int;
-% params.Vehicle_Length=egoVehicle.Length;
-% nlobj.Model.NumberOfParameters = 1;
-% ostacoli.pos=params.pos;
-% ostacoli.dim=params.length/2;
+%  params=ObstaclePosition(scenario);
+% % params.Lane_rb_mat_ext=rb_mat_ext;
+% % params.Lane_rb_mat_int=rb_mat_int;
+%  params.Vehicle_Length=egoVehicle.Length;
+%  nlobj.Model.NumberOfParameters = 1;
+%  ostacoli.pos=params.pos;
+%  ostacoli.dim=params.length/2;
 
 %% Modello di predizione
 
 nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 20;
+nlobj.PredictionHorizon = 10;
 nlobj.ControlHorizon = 2;
 %% Funzione costo
 
@@ -57,16 +57,17 @@ nlobj.ControlHorizon = 2;
 nlobj.Optimization.UseSuboptimalSolution = true;
 
 %% Vincoli anti collisione e mantenimento carreggiata
-%if (size(params.pos,2)>1)
-    %nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
-%end
+% if (size(params.pos,2)>1)
+%     nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
+% end
 
 %% Pesi
-% nlobj.Weights.OutputVariables = [10, 10, 2, 2];
-% nlobj.Weights.ManipulatedVariablesRate = [10, 5];
+%  nlobj.Weights.OutputVariables = [5, 5, 1, 1];
+%  nlobj.Weights.ManipulatedVariablesRate = [1, 5];
 
 %% Validazione
 
+%validateFcns(nlobj,x,u,[],{params});
 validateFcns(nlobj,x,u,[]);
 %Problemi con collision avoidance su troppe colonne
 
@@ -89,6 +90,10 @@ end
     plot(rb_mat_int(:,1),rb_mat_int(:,2))
     plot(rb_mat_ext(:,1),rb_mat_ext(:,2))
     plot(traiettoria_mat(:,2),traiettoria_mat(:,3))
+    
+for i=1:1:size(ost_pos,1)
+    rectangle('Position',[ost_pos(i,1)-ost_dim(1,1), ost_pos(i,2)-ost_dim(1,1), 2*ost_dim(1,1), 2*ost_dim(1,1)],'Curvature',[1,1],'FaceColor',[0.5,0.5,0.5]);
+end
 
     
 
