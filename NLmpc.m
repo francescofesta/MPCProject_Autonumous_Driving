@@ -8,7 +8,7 @@
 %variabili di attuazione:
 %u(1) - linear speed
 %u(2) - angular speed
-
+tic
 nx = 4;
 ny = 4;
 nu = 2;
@@ -24,8 +24,8 @@ p=10;
 %Velocità angolare:
 % nlobj.ManipulatedVariables(2).RateMin = -30*Ts;
 % nlobj.ManipulatedVariables(2).RateMax = 30*Ts;
- nlobj.ManipulatedVariables(2).Min = -30;
- nlobj.ManipulatedVariables(2).Max = 30;
+%  nlobj.ManipulatedVariables(2).Min = -30;
+%  nlobj.ManipulatedVariables(2).Max = 30;
 
 % nlobj.OutputVariables(3).Min = -4;
 % nlobj.OutputVariables(3).Max = 4;
@@ -76,29 +76,56 @@ nlobj.ControlHorizon = 5;
 validateFcns(nlobj,x,u,[]);
 %Problemi con collision avoidance su troppe colonne
 
-Duration=10;
+Duration=300;
 xk=traiettoria_mat(1,2:5);
 lastMV=u;
 
 figure
-xHistory = x';
-for k=1:10
-    yref=traiettoria_mat(k,2:5);
-    [uk,~,info(k)]=nlmpcmove(nlobj,xk,lastMV,yref,[]);
-    xk=info(k).Xopt(2,:);
+xHistory = x;
+
+for k=1:size(sim_time,1)
+    % Stampa la posizione attuale
+    plot(xHistory(k,1),xHistory(k,2),'rx')
+    
+    % Ottieni le misure dal plant.
+    % Qui dovreste mettere la retroazione. Io ho aggiunto del rumore per 
+    % rendere la pianificazione più reale.
+    yk = xHistory(k,:)' + randn*0.01;
+    xk = yk;
+    
+    yref=traiettoria_mat(k:min(k+9,Duration),2:5);
+    
+    [uk,~,info]=nlmpcmove(nlobj,xk,lastMV,yref,[]);
+    % Conserva le mosse di controllo e aggiorna l'ultimo MV per il prossimo
+    % step.
+    uHistory(k,:) = uk';
     lastMV=uk;
     
     % Azionamento e feedback loop
+    % Aggiorna lo stato del plant reale per il prossimo step risolvendo
+    % l'eq differenziale basata sullo stato corrente xk e l'input uk.
     ODEFUN = @(t,xk) ModelloCinematicoVeicolo(xk,uk);
     [TOUT,YOUT] = ode45(ODEFUN, [0 Ts], xHistory(k,:)');
+    odeset('RelTol', 1e-20, 'AbsTol', 1e-20);
+    
     xHistory(k+1,:) = YOUT(end,:);
     
+    % stampa la traiettoria pianificata
+    x1_plan = info.Xopt(:,1);
+    x2_plan = info.Xopt(:,2);
+    plot(x1_plan,x2_plan,'g-');
     hold on
-    plot(info(k).Xopt(1,1), info(k).Xopt(1,2),'bo')
+    
+    % Pausa per l'animazione
+     %pause(0.01);
+    
+   
+    %
 
     
     
 end
+ hold on
     plot(rb_mat_int(:,1),rb_mat_int(:,2))
     plot(rb_mat_ext(:,1),rb_mat_ext(:,2))
     plot(traiettoria_mat(:,2),traiettoria_mat(:,3))
@@ -124,7 +151,7 @@ end
 %     xHistory(k+1,:) = YOUT(end,:);
 %     waitbar(k*Ts/Duration,hbar);
 % end
-
+toc
 
 
 
