@@ -1,5 +1,5 @@
-clear all;
-clc;
+clear all
+clc
 scenario_finale;
 Costmap;
 RRT;

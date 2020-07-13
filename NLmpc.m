@@ -24,8 +24,8 @@ p=10;
 %Velocità angolare:
 % nlobj.ManipulatedVariables(2).RateMin = -30*Ts;
 % nlobj.ManipulatedVariables(2).RateMax = 30*Ts;
-%  nlobj.ManipulatedVariables(2).Min = -30;
-%  nlobj.ManipulatedVariables(2).Max = 30;
+  nlobj.ManipulatedVariables(2).Min = -30;
+  nlobj.ManipulatedVariables(2).Max = 30;
 
 % nlobj.OutputVariables(3).Min = -4;
 % nlobj.OutputVariables(3).Max = 4;
@@ -40,13 +40,13 @@ startPose=scenario.Actors(1,6).Position(1,:);
 x=traiettoria_mat(1,2:5);
 u=[0 0];
 
-%  params=ObstaclePosition(scenario);
+  params=ObstaclePosition(scenario);
 % % params.Lane_rb_mat_ext=rb_mat_ext;
 % % params.Lane_rb_mat_int=rb_mat_int;
-%  params.Vehicle_Length=egoVehicle.Length;
-%  nlobj.Model.NumberOfParameters = 1;
-%  ostacoli.pos=params.pos;
-%  ostacoli.dim=params.length/2;
+  params.Vehicle_Length=egoVehicle.Length;
+  nlobj.Model.NumberOfParameters = 1;
+  ostacoli.pos=params.pos;
+  ostacoli.dim=params.length/2;
 
 %% Modello di predizione
 
@@ -57,31 +57,36 @@ nlobj.PredictionHorizon = 10;
 nlobj.ControlHorizon = 5;
 %% Funzione costo
 
-% nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) Ts*sum(U(1:p,1));
+%nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) 0.5*(1/Ts)*sum(U(2:p+1,1)-U(1:p,1));
+% nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) (1/Ts)*sum(sum(U(1:p,1)));
+% 
 % nlobj.Optimization.ReplaceStandardCost = true;
 % nlobj.Optimization.UseSuboptimalSolution = true;
 
 %% Vincoli anti collisione e mantenimento carreggiata
-% if (size(params.pos,2)>1)
-%     nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
-% end
+%  if (size(params.pos,2)>1)
+%      nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
+%  end
 
 %% Pesi
 %  nlobj.Weights.OutputVariables = [5, 5, 1, 1];
-%  nlobj.Weights.ManipulatedVariablesRate = [1, 5];
+%  nlobj.Weights.ManipulatedVariables = [10, 1];
 
 %% Validazione
 
-%validateFcns(nlobj,x,u,[],{params});
-validateFcns(nlobj,x,u,[]);
+validateFcns(nlobj,x,u,[],{params});
+%validateFcns(nlobj,x,u,[]);
 %Problemi con collision avoidance su troppe colonne
-
-Duration=300;
+%%
+Duration= size(sim_time,1);
 xk=traiettoria_mat(1,2:5);
 lastMV=u;
 
+
 figure
 xHistory = x;
+options = nlmpcmoveopt;
+options.Parameters = {params};
 
 for k=1:size(sim_time,1)
     % Stampa la posizione attuale
@@ -95,7 +100,7 @@ for k=1:size(sim_time,1)
     
     yref=traiettoria_mat(k:min(k+9,Duration),2:5);
     
-    [uk,~,info]=nlmpcmove(nlobj,xk,lastMV,yref,[]);
+    [uk,options,info]=nlmpcmove(nlobj,xk,lastMV,yref,[],options);
     % Conserva le mosse di controllo e aggiorna l'ultimo MV per il prossimo
     % step.
     uHistory(k,:) = uk';
@@ -105,7 +110,7 @@ for k=1:size(sim_time,1)
     % Aggiorna lo stato del plant reale per il prossimo step risolvendo
     % l'eq differenziale basata sullo stato corrente xk e l'input uk.
     ODEFUN = @(t,xk) ModelloCinematicoVeicolo(xk,uk);
-    [TOUT,YOUT] = ode45(ODEFUN, [0 Ts], xHistory(k,:)');
+    [TOUT,YOUT] = ode23(ODEFUN, [0 Ts], xHistory(k,:)');
     odeset('RelTol', 1e-20, 'AbsTol', 1e-20);
     
     xHistory(k+1,:) = YOUT(end,:);
