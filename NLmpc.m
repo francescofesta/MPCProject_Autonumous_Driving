@@ -24,8 +24,8 @@ p=10;
 %Velocità angolare:
 % nlobj.ManipulatedVariables(2).RateMin = -30*Ts;
 % nlobj.ManipulatedVariables(2).RateMax = 30*Ts;
-  nlobj.ManipulatedVariables(2).Min = -30;
-  nlobj.ManipulatedVariables(2).Max = 30;
+%   nlobj.ManipulatedVariables(2).Min = -30;
+%   nlobj.ManipulatedVariables(2).Max = 30;
 
 % nlobj.OutputVariables(3).Min = -4;
 % nlobj.OutputVariables(3).Max = 4;
@@ -40,13 +40,13 @@ startPose=scenario.Actors(1,6).Position(1,:);
 x=traiettoria_mat(1,2:5);
 u=[0 0];
 
-  params=ObstaclePosition(scenario);
-% % params.Lane_rb_mat_ext=rb_mat_ext;
-% % params.Lane_rb_mat_int=rb_mat_int;
-  params.Vehicle_Length=egoVehicle.Length;
-  nlobj.Model.NumberOfParameters = 1;
-  ostacoli.pos=params.pos;
-  ostacoli.dim=params.length/2;
+%   params=ObstaclePosition(scenario);
+% % % params.Lane_rb_mat_ext=rb_mat_ext;
+% % % params.Lane_rb_mat_int=rb_mat_int;
+%   params.Vehicle_Length=egoVehicle.Length;
+%   nlobj.Model.NumberOfParameters = 1;
+%   ostacoli.pos=params.pos;
+%   ostacoli.dim=params.length/2;
 
 %% Modello di predizione
 
@@ -74,8 +74,8 @@ nlobj.ControlHorizon = 5;
 
 %% Validazione
 
-validateFcns(nlobj,x,u,[],{params});
-%validateFcns(nlobj,x,u,[]);
+%validateFcns(nlobj,x,u,[],{params});
+validateFcns(nlobj,x,u,[]);
 %Problemi con collision avoidance su troppe colonne
 %%
 Duration= size(sim_time,1);
@@ -85,8 +85,8 @@ lastMV=u;
 
 figure
 xHistory = x;
-options = nlmpcmoveopt;
-options.Parameters = {params};
+% options = nlmpcmoveopt;
+% options.Parameters = {params};
 
 for k=1:size(sim_time,1)
     % Stampa la posizione attuale
@@ -100,7 +100,7 @@ for k=1:size(sim_time,1)
     
     yref=traiettoria_mat(k:min(k+9,Duration),2:5);
     
-    [uk,options,info]=nlmpcmove(nlobj,xk,lastMV,yref,[],options);
+    [uk,~,info]=nlmpcmove(nlobj,xk,lastMV,yref,[]);
     % Conserva le mosse di controllo e aggiorna l'ultimo MV per il prossimo
     % step.
     uHistory(k,:) = uk';
@@ -111,7 +111,7 @@ for k=1:size(sim_time,1)
     % l'eq differenziale basata sullo stato corrente xk e l'input uk.
     ODEFUN = @(t,xk) ModelloCinematicoVeicolo(xk,uk);
     [TOUT,YOUT] = ode23(ODEFUN, [0 Ts], xHistory(k,:)');
-    odeset('RelTol', 1e-20, 'AbsTol', 1e-20);
+    %odeset('RelTol', 1e-20, 'AbsTol', 1e-20);
     
     xHistory(k+1,:) = YOUT(end,:);
     
