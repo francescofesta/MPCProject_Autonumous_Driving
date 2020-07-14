@@ -20,9 +20,9 @@ setCosts(costmap,rb_no_terz_ext(i,:),occupiedVal);
 end
 
 %% ostacoli
-for i=1:1:5
-setCosts(costmap,scenario.Actors(1,i).Position(1,1:2),occupiedVal);
-end
+% for i=1:1:5
+% setCosts(costmap,scenario.Actors(1,i).Position(1,1:2),occupiedVal);
+% end
 plot(costmap)
 %setCosts(costmap,[17.9,16.1],occupiedVal);
 %plot(costmap)

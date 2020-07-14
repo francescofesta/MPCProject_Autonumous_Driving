@@ -21,16 +21,18 @@ p=10;
 %Velocità:
 % nlobj.ManipulatedVariables(1).RateMin = -0.2*Ts;
 % nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
+nlobj.Weights.ManipulatedVariablesRate(1)=10;
+% nlobj.Weights.ManipulatedVariablesRate(2)=10;
+
+% nlobj.Weights.ManipulatedVariablesRate(2)=1;  
 %Velocità angolare:
 % nlobj.ManipulatedVariables(2).RateMin = -30*Ts;
 % nlobj.ManipulatedVariables(2).RateMax = 30*Ts;
 %   nlobj.ManipulatedVariables(2).Min = -30;
 %   nlobj.ManipulatedVariables(2).Max = 30;
 
-% nlobj.OutputVariables(3).Min = -4;
-% nlobj.OutputVariables(3).Max = 4;
-%nlobj.OutputVariables(4).Min = -30;
-%nlobj.OutputVariables(4).Max = 30;
+nlobj.Weights.OutputVariables(1)=20;
+nlobj.Weights.OutputVariables(2)=20;
 
 startPose=scenario.Actors(1,6).Position(1,:);
 %startPose=[12 48.0137366185146 0];
@@ -95,7 +97,7 @@ for k=1:size(sim_time,1)
     % Ottieni le misure dal plant.
     % Qui dovreste mettere la retroazione. Io ho aggiunto del rumore per 
     % rendere la pianificazione più reale.
-    yk = xHistory(k,:)' + randn*0.01;
+    yk = xHistory(k,:)'; + randn*0.1;
     xk = yk;
     
     yref=traiettoria_mat(k:min(k+9,Duration),2:5);
@@ -110,8 +112,8 @@ for k=1:size(sim_time,1)
     % Aggiorna lo stato del plant reale per il prossimo step risolvendo
     % l'eq differenziale basata sullo stato corrente xk e l'input uk.
     ODEFUN = @(t,xk) ModelloCinematicoVeicolo(xk,uk);
-    [TOUT,YOUT] = ode23(ODEFUN, [0 Ts], xHistory(k,:)');
-    %odeset('RelTol', 1e-20, 'AbsTol', 1e-20);
+    [TOUT,YOUT] = ode45(ODEFUN, [0 Ts], xHistory(k,:)');
+    odeset('RelTol', 1e-20, 'AbsTol', 1e-20);
     
     xHistory(k+1,:) = YOUT(end,:);
     

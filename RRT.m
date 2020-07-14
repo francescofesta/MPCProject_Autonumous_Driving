@@ -1,5 +1,5 @@
 %% RRT
-planner=pathPlannerRRT(costmap,'ConnectionDistance',3);
+planner=pathPlannerRRT(costmap,'ConnectionDistance',15,'MinTurningRadius',2);
 startPose=scenario.Actors(1,6).Position(1,:);
 goalPose=[22.9,27.8,pi];
 [refPath,tree] = plan(planner,startPose,goalPose);
