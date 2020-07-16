@@ -1,4 +1,4 @@
-function [xdot] = ModelloCinematicoVeicolo(x,u)
+function [xdot] = ModelloCinematicoVeicolo(x,u,params)
 
     %L=params.Vehicle_Length;
 %     x_update = [cos(x(3))*x(4);

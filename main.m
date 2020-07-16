@@ -15,6 +15,8 @@ for i=1:1:size(pose_record,2)
 end
 
 traiettoria_mat=[sim_time,poses_new,angle_new,velocity_new ]; 
+
+
 %% ostacoli
 ost=scenario.Actors(1,1:5);
 
@@ -30,6 +32,15 @@ ost_pos(:,3)=[];
 tic
 NLmpc;
 toc
+
+%% PLOT SCENARIO PUNTI DI VIA REALI
+
+waypoints=[xHistory(:,1:2)];
+speed=[uHistory(:,1)];
+v=vehicle(scenario);
+trajectory(v,waypoints);
+chasePlot(v);
+
 
 
 

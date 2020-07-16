@@ -17,22 +17,25 @@ nlobj = nlmpc(nx,ny,nu);
 Ts=0.1;%scenario.SampleTime;
 p=10;
 
-%Vincoli di controllo
-%Velocità:
+% Vincoli di controllo
+% Velocità:
 % nlobj.ManipulatedVariables(1).RateMin = -0.2*Ts;
 % nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
-nlobj.Weights.ManipulatedVariablesRate(1)=10;
-% nlobj.Weights.ManipulatedVariablesRate(2)=10;
+
+  nlobj.Weights.ManipulatedVariablesRate(1)=2;
+ 
+% nlobj.Weights.ManipulatedVariablesRate(2)=5;
 
 % nlobj.Weights.ManipulatedVariablesRate(2)=1;  
-%Velocità angolare:
+% Velocità angolare:
 % nlobj.ManipulatedVariables(2).RateMin = -30*Ts;
 % nlobj.ManipulatedVariables(2).RateMax = 30*Ts;
-%   nlobj.ManipulatedVariables(2).Min = -30;
-%   nlobj.ManipulatedVariables(2).Max = 30;
+% nlobj.ManipulatedVariables(2).Min = -30;
+% nlobj.ManipulatedVariables(2).Max = 30;
 
-nlobj.Weights.OutputVariables(1)=20;
-nlobj.Weights.OutputVariables(2)=20;
+% nlobj.Weights.OutputVariables(1)=20;
+% nlobj.Weights.OutputVariables(2)=20;
+% nlobj.Weights.OutputVariables(3)=5;
 
 startPose=scenario.Actors(1,6).Position(1,:);
 %startPose=[12 48.0137366185146 0];
@@ -42,13 +45,13 @@ startPose=scenario.Actors(1,6).Position(1,:);
 x=traiettoria_mat(1,2:5);
 u=[0 0];
 
-%   params=ObstaclePosition(scenario);
-% % % params.Lane_rb_mat_ext=rb_mat_ext;
-% % % params.Lane_rb_mat_int=rb_mat_int;
-%   params.Vehicle_Length=egoVehicle.Length;
-%   nlobj.Model.NumberOfParameters = 1;
-%   ostacoli.pos=params.pos;
-%   ostacoli.dim=params.length/2;
+  params=ObstaclePosition(scenario);
+  params.Lane_rb_mat_ext=rb_mat_ext;
+  params.Lane_rb_mat_int=rb_mat_int;
+  params.Vehicle_Length=egoVehicle.Length;
+  nlobj.Model.NumberOfParameters = 1;
+  ostacoli.pos=params.pos;
+  ostacoli.dim=params.length/2;
 
 %% Modello di predizione
 
@@ -59,16 +62,16 @@ nlobj.PredictionHorizon = 10;
 nlobj.ControlHorizon = 5;
 %% Funzione costo
 
-%nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) 0.5*(1/Ts)*sum(U(2:p+1,1)-U(1:p,1));
+% nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) 0.5*(1/Ts)*sum(U(2:p+1,1)-U(1:p,1));
 % nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) (1/Ts)*sum(sum(U(1:p,1)));
 % 
 % nlobj.Optimization.ReplaceStandardCost = true;
 % nlobj.Optimization.UseSuboptimalSolution = true;
 
 %% Vincoli anti collisione e mantenimento carreggiata
-%  if (size(params.pos,2)>1)
-%      nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
-%  end
+ if (size(params.pos,2)>1)
+     nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
+ end
 
 %% Pesi
 %  nlobj.Weights.OutputVariables = [5, 5, 1, 1];
@@ -76,9 +79,9 @@ nlobj.ControlHorizon = 5;
 
 %% Validazione
 
-%validateFcns(nlobj,x,u,[],{params});
-validateFcns(nlobj,x,u,[]);
-%Problemi con collision avoidance su troppe colonne
+validateFcns(nlobj,x,u,[],{params});
+% validateFcns(nlobj,x,u,[]);
+% Problemi con collision avoidance su troppe colonne
 %%
 Duration= size(sim_time,1);
 xk=traiettoria_mat(1,2:5);
@@ -87,8 +90,8 @@ lastMV=u;
 
 figure
 xHistory = x;
-% options = nlmpcmoveopt;
-% options.Parameters = {params};
+options = nlmpcmoveopt;
+options.Parameters = {params};
 
 for k=1:size(sim_time,1)
     % Stampa la posizione attuale
@@ -97,16 +100,18 @@ for k=1:size(sim_time,1)
     % Ottieni le misure dal plant.
     % Qui dovreste mettere la retroazione. Io ho aggiunto del rumore per 
     % rendere la pianificazione più reale.
-    yk = xHistory(k,:)'; + randn*0.1;
+    yk = xHistory(k,:)';
+%     + randn*0.1;
     xk = yk;
     
     yref=traiettoria_mat(k:min(k+9,Duration),2:5);
     
-    [uk,~,info]=nlmpcmove(nlobj,xk,lastMV,yref,[]);
+    [uk,~,info]=nlmpcmove(nlobj,xk,lastMV,yref,[],options);
     % Conserva le mosse di controllo e aggiorna l'ultimo MV per il prossimo
     % step.
     uHistory(k,:) = uk';
     lastMV=uk;
+    
     
     % Azionamento e feedback loop
     % Aggiorna lo stato del plant reale per il prossimo step risolvendo
@@ -135,7 +140,7 @@ end
  hold on
     plot(rb_mat_int(:,1),rb_mat_int(:,2))
     plot(rb_mat_ext(:,1),rb_mat_ext(:,2))
-    plot(traiettoria_mat(:,2),traiettoria_mat(:,3))
+    plot(traiettoria_mat(:,2),traiettoria_mat(:,3),'ko')
     
 for i=1:1:size(ost_pos,1)
     rectangle('Position',[ost_pos(i,1)-ost_dim(1,1), ost_pos(i,2)-ost_dim(1,1), 2*ost_dim(1,1), 2*ost_dim(1,1)],'Curvature',[1,1],'FaceColor',[0.5,0.5,0.5]);
@@ -158,7 +163,7 @@ end
 %     xHistory(k+1,:) = YOUT(end,:);
 %     waitbar(k*Ts/Duration,hbar);
 % end
-toc
+
 
 
 
