@@ -3,10 +3,13 @@ mapWidth = 100;
 mapLength = 100;
 costVal = 0.15;
 cellSize = 0.2;
+vehicleDim=vehicleDimensions(egoVehicle.Length,egoVehicle.Width);
+ccConfig = inflationCollisionChecker(vehicleDim,3);
 
-costmap = vehicleCostmap(mapWidth,mapLength,costVal,'CellSize',cellSize,'InflationRadius',1.5);
-
+costmap = vehicleCostmap(mapWidth,mapLength,costVal,'CellSize',cellSize,'InflationRadius',1.5,'CollisionChecker',ccConfig);
+costmap.CollisionChecker=ccConfig;
 occupiedVal= 0.7;
+
 rB=roadBoundaries(scenario);
 %% MATRICI
 rb_mat_ext= rB{:,1};
@@ -20,9 +23,9 @@ setCosts(costmap,rb_no_terz_ext(i,:),occupiedVal);
 end
 
 %% ostacoli
-% for i=1:1:5
-% setCosts(costmap,scenario.Actors(1,i).Position(1,1:2),occupiedVal);
-% end
+for i=1:1:5
+setCosts(costmap,scenario.Actors(1,i).Position(1,1:2),occupiedVal);
+end
 plot(costmap)
 %setCosts(costmap,[17.9,16.1],occupiedVal);
 %plot(costmap)
