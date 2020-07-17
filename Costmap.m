@@ -5,8 +5,9 @@ costVal = 0.15;
 cellSize = 0.2;
 vehicleDim=vehicleDimensions(egoVehicle.Length,egoVehicle.Width);
 ccConfig = inflationCollisionChecker(vehicleDim,3);
+ccConfig.InflationRadius=1.8;
 
-costmap = vehicleCostmap(mapWidth,mapLength,costVal,'CellSize',cellSize,'InflationRadius',1.5,'CollisionChecker',ccConfig);
+costmap = vehicleCostmap(mapWidth,mapLength,costVal,'CellSize',cellSize,'CollisionChecker',ccConfig);
 costmap.CollisionChecker=ccConfig;
 occupiedVal= 0.7;
 
