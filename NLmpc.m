@@ -46,9 +46,9 @@ x=traiettoria_mat(1,2:5);
 u=[0 0];
 
   params=ObstaclePosition(scenario);
-  params.Lane_rb_mat_ext=rb_mat_ext;
-  params.Lane_rb_mat_int=rb_mat_int;
-  params.Vehicle_Length=egoVehicle.Length;
+%   params.Lane_rb_mat_ext=rb_mat_ext;
+%   params.Lane_rb_mat_int=rb_mat_int;
+%   params.Vehicle_Length=egoVehicle.Length;
   nlobj.Model.NumberOfParameters = 1;
   ostacoli.pos=params.pos;
   ostacoli.dim=params.length/2;
@@ -69,7 +69,7 @@ nlobj.ControlHorizon = 5;
 % nlobj.Optimization.UseSuboptimalSolution = true;
 
 %% Vincoli anti collisione e mantenimento carreggiata
- if (size(params.pos,2)>1)
+ if (size(params.pos,1)>0)
      nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
  end
 

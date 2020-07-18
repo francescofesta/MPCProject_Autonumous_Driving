@@ -35,11 +35,16 @@ toc
 
 %% PLOT SCENARIO PUNTI DI VIA REALI
 
-waypoints=[xHistory(:,1:2)];
-speed=[uHistory(:,1)];
-v=vehicle(scenario);
-trajectory(v,waypoints);
-chasePlot(v);
+% waypoints=[xHistory(1:515,1:2)];
+% speed=abs([uHistory(:,1)]);
+% % v=vehicle(scenario);
+% trajectory(egoVehicle,waypoints,speed);
+% 
+% chasePlot(egoVehicle);
+% plot(scenario,'Waypoints','on','RoadCenters','on')
+% while advance(scenario)
+%     pause(0.1)
+% end
 
 
 
