@@ -15,7 +15,7 @@ nu = 2;
 nlobj = nlmpc(nx,ny,nu);
 
 Ts=0.1;%scenario.SampleTime;
-% p=10;
+p=10;
 
 % Vincoli di controllo
 % Velocità:
@@ -46,9 +46,9 @@ x=traiettoria_mat(1,2:5);
 u=[0 0];
 
   params=ObstaclePosition(scenario);
-  params.Lane_rb_mat_ext=rb_mat_ext;
-  params.Lane_rb_mat_int=rb_mat_int;
-  params.Vehicle_Length=egoVehicle.Length;
+%   params.Lane_rb_mat_ext=rb_mat_ext;
+%   params.Lane_rb_mat_int=rb_mat_int;
+%   params.Vehicle_Length=egoVehicle.Length;
   nlobj.Model.NumberOfParameters = 1;
   ostacoli.pos=params.pos;
   ostacoli.dim=params.length/2;
@@ -58,7 +58,7 @@ u=[0 0];
 nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 5;
+nlobj.PredictionHorizon = 15;
 nlobj.ControlHorizon = 2;
 %% Funzione costo
 
@@ -116,16 +116,16 @@ for k=1:size(sim_time,1)
     % Azionamento e feedback loop
     % Aggiorna lo stato del plant reale per il prossimo step risolvendo
     % l'eq differenziale basata sullo stato corrente xk e l'input uk.
-%     option=odeset('RelTol', 1e-8, 'AbsTol', 1e-8);
+    options=odeset('RelTol', 1e-20, 'AbsTol', 1e-20);
     ODEFUN = @(t,xk) ModelloCinematicoVeicolo(xk,uk);
-    [TOUT,YOUT] = ode45(ODEFUN, [0 Ts], xHistory(k,:)');
+    [TOUT,YOUT] = ode45(ODEFUN, [0 Ts], xHistory(k,:)',options);
        
     xHistory(k+1,:) = YOUT(end,:);
     
     % stampa la traiettoria pianificata
     x1_plan = info.Xopt(:,1);
     x2_plan = info.Xopt(:,2);
-%     plot(x1_plan,x2_plan,'g-');
+    plot(x1_plan,x2_plan,'g-');
     hold on
     
     % Pausa per l'animazione

@@ -6,7 +6,9 @@ RRT;
 pose_record=record(scenario);
 %% traiettoria
 sim_time={pose_record.SimulationTime};
+
 sim_time=cell2mat(sim_time');
+
 for i=1:1:size(pose_record,2)
     
     poses_new(i,1:2)=pose_record(i).ActorPoses(6).Position(1:2);
@@ -45,6 +47,7 @@ toc
 % while advance(scenario)
 %     pause(0.1)
 % end
+
 
 
 
