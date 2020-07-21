@@ -22,7 +22,7 @@ Ts=0.1;%scenario.SampleTime;
 % nlobj.ManipulatedVariables(1).RateMin = -0.2*Ts;
 % nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
 
-  nlobj.Weights.ManipulatedVariablesRate(1)=2;
+% nlobj.Weights.ManipulatedVariablesRate(1)=2;
  
 % nlobj.Weights.ManipulatedVariablesRate(2)=5;
 
@@ -49,6 +49,7 @@ u=[0 0];
   params.Lane_rb_mat_ext=rb_mat_ext;
   params.Lane_rb_mat_int=rb_mat_int;
   params.Vehicle_Length=egoVehicle.Length;
+  params.traiettoria_mat=traiettoria_mat(:,2:3);
   nlobj.Model.NumberOfParameters = 1;
   ostacoli.pos=params.pos;
   ostacoli.dim=params.length/2;
@@ -56,10 +57,11 @@ u=[0 0];
 %% Modello di predizione
 
 nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
+% nlobj.Jacobian.StateFcn="myJacobian";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 5;
-nlobj.ControlHorizon = 2;
+nlobj.PredictionHorizon = 15;
+nlobj.ControlHorizon = 5;
 %% Funzione costo
 
 % nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) 0.5*(1/Ts)*sum(U(2:p+1,1)-U(1:p,1));
@@ -70,7 +72,8 @@ nlobj.ControlHorizon = 2;
 
 %% Vincoli anti collisione e mantenimento carreggiata
  if (size(params.pos,1)>0)
-     nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
+     %nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
+      nlobj.Optimization.CustomIneqConFcn = "ObstacleAvoidanceFcn";
  end
 
 %% Pesi
@@ -100,8 +103,8 @@ for k=1:size(sim_time,1)
     % Ottieni le misure dal plant.
     % Qui dovreste mettere la retroazione. Io ho aggiunto del rumore per 
     % rendere la pianificazione più reale.
-    yk = xHistory(k,:)';
-%     + randn*0.1;
+    yk = xHistory(k,:)';%+ randn*0.1;
+     
     xk = yk;
     
     yref=traiettoria_mat(k:min(k+9,Duration),2:5);
@@ -116,9 +119,9 @@ for k=1:size(sim_time,1)
     % Azionamento e feedback loop
     % Aggiorna lo stato del plant reale per il prossimo step risolvendo
     % l'eq differenziale basata sullo stato corrente xk e l'input uk.
-%     option=odeset('RelTol', 1e-8, 'AbsTol', 1e-8);
+     %option=odeset( 'AbsTol', 1e-8);
     ODEFUN = @(t,xk) ModelloCinematicoVeicolo(xk,uk);
-    [TOUT,YOUT] = ode45(ODEFUN, [0 Ts], xHistory(k,:)');
+    [TOUT,YOUT] = ode15s(ODEFUN, [0 Ts], xHistory(k,:)');
        
     xHistory(k+1,:) = YOUT(end,:);
     
