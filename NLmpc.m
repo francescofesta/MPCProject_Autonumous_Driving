@@ -9,8 +9,8 @@
 %u(1) - linear speed
 %u(2) - angular speed
 tic
-nx = 4;
-ny = 4;
+nx = 3;
+ny = 3;
 nu = 2;
 nlobj = nlmpc(nx,ny,nu);
 
@@ -22,7 +22,7 @@ Ts=0.1;%scenario.SampleTime;
 % nlobj.ManipulatedVariables(1).RateMin = -0.2*Ts;
 % nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
 
-% nlobj.Weights.ManipulatedVariablesRate(1)=2;
+    nlobj.Weights.ManipulatedVariablesRate(1)=2;
  
 % nlobj.Weights.ManipulatedVariablesRate(2)=5;
 
@@ -30,19 +30,19 @@ Ts=0.1;%scenario.SampleTime;
 % Velocità angolare:
 % nlobj.ManipulatedVariables(2).RateMin = -30*Ts;
 % nlobj.ManipulatedVariables(2).RateMax = 30*Ts;
-% nlobj.ManipulatedVariables(2).Min = -30;
-% nlobj.ManipulatedVariables(2).Max = 30;
+nlobj.ManipulatedVariables(2).Min = -30;
+nlobj.ManipulatedVariables(2).Max = 30;
 
-% nlobj.Weights.OutputVariables(1)=20;
+nlobj.Weights.OutputVariables(1)=2;
 % nlobj.Weights.OutputVariables(2)=20;
 % nlobj.Weights.OutputVariables(3)=5;
 
-startPose=scenario.Actors(1,6).Position(1,:);
+startPose=traiettoria_mat(2,2:4);
 %startPose=[12 48.0137366185146 0];
 %goalPose=[55,30,pi,5];
 %condizioni iniziali
 %x=[startPose 0];
-x=traiettoria_mat(1,2:5);
+x=traiettoria_mat(2,2:4);
 u=[0 0];
 
   params=ObstaclePosition(scenario);
@@ -61,7 +61,7 @@ nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 
 nlobj.Ts = Ts;
 nlobj.PredictionHorizon = 15;
-nlobj.ControlHorizon = 5;
+nlobj.ControlHorizon = 2;
 %% Funzione costo
 
 % nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) 0.5*(1/Ts)*sum(U(2:p+1,1)-U(1:p,1));
@@ -87,7 +87,7 @@ validateFcns(nlobj,x,u,[],{params});
 % Problemi con collision avoidance su troppe colonne
 %%
 Duration= size(sim_time,1);
-xk=traiettoria_mat(1,2:5);
+xk=x;
 lastMV=u;
 
 
@@ -95,6 +95,14 @@ figure
 xHistory = x;
 options = nlmpcmoveopt;
 options.Parameters = {params};
+hold on
+    plot(rb_mat_int(:,1),rb_mat_int(:,2))
+    plot(rb_mat_ext(:,1),rb_mat_ext(:,2))
+    plot(traiettoria_mat(:,2),traiettoria_mat(:,3))
+    
+for i=1:1:size(ost_pos,1)
+    rectangle('Position',[ost_pos(i,1)-ost_dim(1,1), ost_pos(i,2)-ost_dim(1,1), 2*ost_dim(1,1), 2*ost_dim(1,1)],'Curvature',[1,1],'FaceColor',[0.5,0.5,0.5]);
+end
 
 for k=1:size(sim_time,1)
     % Stampa la posizione attuale
@@ -107,7 +115,7 @@ for k=1:size(sim_time,1)
      
     xk = yk;
     
-    yref=traiettoria_mat(k:min(k+9,Duration),2:5);
+    yref=traiettoria_mat(k+1:min(k+nlobj.PredictionHorizon-1,Duration),2:4);
     
     [uk,~,info]=nlmpcmove(nlobj,xk,lastMV,yref,[],options);
     % Conserva le mosse di controllo e aggiorna l'ultimo MV per il prossimo
@@ -121,7 +129,7 @@ for k=1:size(sim_time,1)
     % l'eq differenziale basata sullo stato corrente xk e l'input uk.
      %option=odeset( 'AbsTol', 1e-8);
     ODEFUN = @(t,xk) ModelloCinematicoVeicolo(xk,uk);
-    [TOUT,YOUT] = ode15s(ODEFUN, [0 Ts], xHistory(k,:)');
+    [TOUT,YOUT] = ode45(ODEFUN, [0 Ts], xHistory(k,:)');
        
     xHistory(k+1,:) = YOUT(end,:);
     
@@ -132,22 +140,10 @@ for k=1:size(sim_time,1)
     hold on
     
     % Pausa per l'animazione
-     %pause(0.01);
-    
+     pause(0.01);
    
-    %
-
-    
-    
 end
- hold on
-    plot(rb_mat_int(:,1),rb_mat_int(:,2))
-    plot(rb_mat_ext(:,1),rb_mat_ext(:,2))
-    plot(traiettoria_mat(:,2),traiettoria_mat(:,3),'ko')
-    
-for i=1:1:size(ost_pos,1)
-    rectangle('Position',[ost_pos(i,1)-ost_dim(1,1), ost_pos(i,2)-ost_dim(1,1), 2*ost_dim(1,1), 2*ost_dim(1,1)],'Curvature',[1,1],'FaceColor',[0.5,0.5,0.5]);
-end
+ 
 
     
 
