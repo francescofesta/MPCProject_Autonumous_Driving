@@ -37,19 +37,18 @@ toc
 
 %% PLOT SCENARIO PUNTI DI VIA REALI
 
-% waypoints=[xHistory];
-% waypoints_diff_prima=waypoints(:,1);
-% waypoints_diff_seconda=waypoints(:,2);
-% waypoints_diff_seconda=[waypoints_diff_seconda;0];
-% waypoints_diff_prima=unique(waypoints_diff_prima);
-% 
-% waypoints_diff_seconda=unique(waypoints_diff_seconda);
-% waypoints_diff=[waypoints_diff_prima waypoints_diff_seconda];
+waypoints=[xHistory(:,1:2)];
+waypoints_diff_prima=waypoints(:,1);
+waypoints_diff_seconda=waypoints(:,2);
+waypoints_diff_prima=unique(waypoints_diff_prima)
+
+waypoints_diff_seconda=unique(waypoints_diff_seconda)
+waypoints_
 % speed=abs(uHistory(:,1));
 speed=10;
 
 % % v=vehicle(scenario);
-trajectory(egoVehicle,xHistory,speed);
+trajectory(egoVehicle,waypoints_diff,speed);
 % 
 chasePlot(egoVehicle);
 plot(scenario,'Waypoints','on','RoadCenters','on')

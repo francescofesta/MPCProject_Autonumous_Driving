@@ -21,10 +21,17 @@ Ts=0.1;%scenario.SampleTime;
 % Velocità:
 % nlobj.ManipulatedVariables(1).RateMin = -0.2*Ts;
 % nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
+% nlobj.ManipulatedVariables(1).Min = 6;
+% nlobj.ManipulatedVariables(1).Max = 30;
 
     nlobj.Weights.ManipulatedVariablesRate(1)=2;
  
 % nlobj.Weights.ManipulatedVariablesRate(2)=5;
+
+% nlobj.ManipulatedVariables(1).MinECR=1;
+% nlobj.ManipulatedVariables(1).MaxECR=2;
+
+
 
 % nlobj.Weights.ManipulatedVariablesRate(2)=1;  
 % Velocità angolare:
@@ -37,7 +44,7 @@ nlobj.Weights.OutputVariables(1)=2;
 % nlobj.Weights.OutputVariables(2)=20;
 % nlobj.Weights.OutputVariables(3)=5;
 
-startPose=traiettoria_mat(2,2:5);
+startPose=traiettoria_mat(2,2:4);
 %startPose=[12 48.0137366185146 0];
 %goalPose=[55,30,pi,5];
 %condizioni iniziali
@@ -60,10 +67,10 @@ nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 % nlobj.Jacobian.StateFcn="myJacobian";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 15;
+nlobj.PredictionHorizon = 5;
 nlobj.ControlHorizon = 2;
 %% Funzione costo
-
+ 
 % nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) 0.5*(1/Ts)*sum(U(2:p+1,1)-U(1:p,1));
 % nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) (1/Ts)*sum(sum(U(1:p,1)));
 % 
@@ -72,8 +79,8 @@ nlobj.ControlHorizon = 2;
 
 %% Vincoli anti collisione e mantenimento carreggiata
  if (size(params.pos,1)>0)
-     %nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
-      nlobj.Optimization.CustomIneqConFcn = "ObstacleAvoidanceFcn";
+     nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
+%       nlobj.Optimization.CustomIneqConFcn = "ObstacleAvoidanceFcn";
  end
 
 %% Pesi
@@ -95,10 +102,18 @@ figure
 xHistory = x;
 options = nlmpcmoveopt;
 options.Parameters = {params};
+hold on
+    plot(rb_mat_int(:,1),rb_mat_int(:,2))
+    plot(rb_mat_ext(:,1),rb_mat_ext(:,2))
+    plot(traiettoria_mat(:,2),traiettoria_mat(:,3))
+    
+for i=1:1:size(ost_pos,1)
+    rectangle('Position',[ost_pos(i,1)-ost_dim(1,1), ost_pos(i,2)-ost_dim(1,1), 2*ost_dim(1,1), 2*ost_dim(1,1)],'Curvature',[1,1],'FaceColor',[0.5,0.5,0.5]);
+end
 
 for k=1:size(sim_time,1)
     % Stampa la posizione attuale
-    plot(xHistory(k,1),xHistory(k,2))
+    plot(xHistory(k,1),xHistory(k,2),'rx')
     
     % Ottieni le misure dal plant.
     % Qui dovreste mettere la retroazione. Io ho aggiunto del rumore per 
@@ -132,22 +147,10 @@ for k=1:size(sim_time,1)
     hold on
     
     % Pausa per l'animazione
-     %pause(0.01);
-    
+     pause(0.01);
    
-    %
-
-    
-    
 end
- hold on
-    plot(rb_mat_int(:,1),rb_mat_int(:,2))
-    plot(rb_mat_ext(:,1),rb_mat_ext(:,2))
-    plot(traiettoria_mat(:,2),traiettoria_mat(:,3),'ko')
-    
-for i=1:1:size(ost_pos,1)
-    rectangle('Position',[ost_pos(i,1)-ost_dim(1,1), ost_pos(i,2)-ost_dim(1,1), 2*ost_dim(1,1), 2*ost_dim(1,1)],'Curvature',[1,1],'FaceColor',[0.5,0.5,0.5]);
-end
+ 
 
     
 

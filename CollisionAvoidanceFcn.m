@@ -22,7 +22,7 @@ for i=1:1:size(rb_mat_ext,1)
         j=j+1;        
     end   
 end
-vincolo_est=ones(5,1);
+vincolo_est=ones(p,1);
 if k>1
  for i=1:1:size(rb_ext_new,1)
     diff_ext(:,i)=vecnorm(X(2:p+1,1:2)-rb_ext_new(i,:),2,2);
@@ -30,7 +30,7 @@ if k>1
  end
  vincolo_est=reshape(vincolo_est,[],1);
 end
-vincolo_int=ones(5,1);
+vincolo_int=ones(p,1);
 if j>1
  for i=1:1:size(rb_int_new,1)
     diff_int(:,i)=vecnorm(X(2:p+1,1:2)-rb_int_new(i,:),2,2);

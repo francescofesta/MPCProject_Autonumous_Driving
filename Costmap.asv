@@ -51,13 +51,12 @@ hold on
         [xval,yval,but]=ginput(1);
         end
         dims = [1 50];
-prompt = {'teta start pose','teta goal pose'};
-dlgtitle = 'Inserire angoli';               
+prompt = {'teta start pose'};
+dlgtitle = 'Inserire teta start pose','inserire teta goal pose';               
 angoli = inputdlg(prompt,dlgtitle,dims); % funzione prompt comandi
-teta_start=str2num(angoli{1});
-teta_goal=str2num(angoli{2});
+map_size_x=str2num(dati_mappa{1});
         
-    startPose=[xval yval teta_start];
+    startPose=[xval yval 0];
     
  h=msgbox('Scelta della goal pose');
     uiwait(h,5);
@@ -74,7 +73,7 @@ teta_goal=str2num(angoli{2});
         [xval,yval,but]=ginput(1);
         end
         
-    goalPose=[xval yval teta_goal]; 
+    goalPose=[xval yval 0]; 
     
     plot(startPose(:,1),startPose(:,2),'*');
     hold on
