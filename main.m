@@ -36,26 +36,14 @@ NLmpc;
 toc
 
 %% PLOT SCENARIO PUNTI DI VIA REALI
-
-% waypoints=[xHistory];
-% waypoints_diff_prima=waypoints(:,1);
-% waypoints_diff_seconda=waypoints(:,2);
-% waypoints_diff_seconda=[waypoints_diff_seconda;0];
-% waypoints_diff_prima=unique(waypoints_diff_prima);
-% 
-% waypoints_diff_seconda=unique(waypoints_diff_seconda);
-% waypoints_diff=[waypoints_diff_prima waypoints_diff_seconda];
-% speed=abs(uHistory(:,1));
-speed=10;
-
-% % v=vehicle(scenario);
-trajectory(egoVehicle,xHistory,speed);
-% 
-chasePlot(egoVehicle);
-plot(scenario,'Waypoints','on','RoadCenters','on')
-while advance(scenario)
-    pause(0.1)
-end
+% restart(scenario);
+% waypoints=[xHistory(:,1:2)];
+% trajectory(egoVehicle,waypoints);
+% chasePlot(egoVehicle);
+% plot(scenario,'Waypoints','on','RoadCenters','on')
+% while advance(scenario)
+%     pause(0.1)
+% end
 
 
 

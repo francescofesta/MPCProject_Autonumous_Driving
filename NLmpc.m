@@ -23,26 +23,20 @@ Ts=0.1;%scenario.SampleTime;
 % nlobj.ManipulatedVariables(1).RateMax = 0.2*Ts;
 % nlobj.ManipulatedVariables(1).Min = 6;
 % nlobj.ManipulatedVariables(1).Max = 30;
-
-    nlobj.Weights.ManipulatedVariablesRate(1)=2;
- 
+% nlobj.ManipulatedVariables(2).RateMin = -3 ;
+% nlobj.ManipulatedVariables(2).RateMax = 3;
+ nlobj.Weights.ManipulatedVariablesRate(1)=2; 
 % nlobj.Weights.ManipulatedVariablesRate(2)=5;
-
 % nlobj.ManipulatedVariables(1).MinECR=1;
 % nlobj.ManipulatedVariables(1).MaxECR=2;
-
-
-
 % nlobj.Weights.ManipulatedVariablesRate(2)=1;  
-% Velocità angolare:
 % nlobj.ManipulatedVariables(2).RateMin = -30*Ts;
 % nlobj.ManipulatedVariables(2).RateMax = 30*Ts;
 % nlobj.ManipulatedVariables(2).Min = -30;
-% nlobj.ManipulatedVariables(2).Max = 30;
-% 
-nlobj.Weights.OutputVariables(1)=2;
+% nlobj.ManipulatedVariables(2).Max = 30; 
+  nlobj.Weights.OutputVariables(1)=2;
 % nlobj.Weights.OutputVariables(2)=2;
-% nlobj.Weights.OutputVariables(3)=5;
+% nlobj.Weights.OutputVariables(3)=1;
 
 startPose=traiettoria_mat(2,2:4);
 
@@ -66,15 +60,15 @@ nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 % nlobj.Jacobian.StateFcn="myJacobian";
 
 nlobj.Ts = Ts;
-nlobj.PredictionHorizon = 15;
+nlobj.PredictionHorizon = 10;
 nlobj.ControlHorizon = 2;
 %% Funzione costo
 
-% nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) 0.5*(1/Ts)*sum(U(2:p+1,1)-U(1:p,1));
+% nlobj.Optimization.CustomCostFcn = "mantenimento_carreggiata";
 % nlobj.Optimization.CustomCostFcn = @(X,U,e,data,params) (1/Ts)*sum(sum(U(1:p,1)));
 % 
 % nlobj.Optimization.ReplaceStandardCost = true;
-% nlobj.Optimization.UseSuboptimalSolution = true;
+nlobj.Optimization.UseSuboptimalSolution = true;
 
 %% Vincoli anti collisione e mantenimento carreggiata
  if (size(params.pos,1)>0)
