@@ -25,7 +25,9 @@ Ts=0.1;%scenario.SampleTime;
 % nlobj.ManipulatedVariables(1).Max = 30;
 % nlobj.ManipulatedVariables(2).RateMin = -3 ;
 % nlobj.ManipulatedVariables(2).RateMax = 3;
- nlobj.Weights.ManipulatedVariablesRate(1)=2; 
+
+%  nlobj.Weights.ManipulatedVariablesRate(1)=2; 
+
 % nlobj.Weights.ManipulatedVariablesRate(2)=5;
 % nlobj.ManipulatedVariables(1).MinECR=1;
 % nlobj.ManipulatedVariables(1).MaxECR=2;
@@ -35,7 +37,7 @@ Ts=0.1;%scenario.SampleTime;
 % nlobj.ManipulatedVariables(2).Min = -30;
 % nlobj.ManipulatedVariables(2).Max = 30; 
   nlobj.Weights.OutputVariables(1)=2;
-% nlobj.Weights.OutputVariables(2)=2;
+  nlobj.Weights.OutputVariables(2)=2;
 % nlobj.Weights.OutputVariables(3)=1;
 
 startPose=traiettoria_mat(2,2:4);
@@ -53,6 +55,8 @@ u=[0 0];
   nlobj.Model.NumberOfParameters = 1;
   ostacoli.pos=params.pos;
   ostacoli.dim=params.length/2;
+  params.teta=egoVehicle.Yaw;
+  
 
 %% Modello di predizione
 
@@ -61,7 +65,7 @@ nlobj.Model.StateFcn = "ModelloCinematicoVeicolo";
 
 nlobj.Ts = Ts;
 nlobj.PredictionHorizon = 10;
-nlobj.ControlHorizon = 2;
+nlobj.ControlHorizon = 5;
 %% Funzione costo
 
 % nlobj.Optimization.CustomCostFcn = "mantenimento_carreggiata";
@@ -107,7 +111,7 @@ end
 for k=1:size(sim_time,1)
     % Stampa la posizione attuale
     plot(xHistory(k,1),xHistory(k,2),'rx')
-    
+    params.teta=egoVehicle.Yaw;
     % Ottieni le misure dal plant.
     % Qui dovreste mettere la retroazione. Io ho aggiunto del rumore per 
     % rendere la pianificazione più reale.

@@ -17,7 +17,7 @@ x_update = [u(1) * cos(x(3)) * cos(u(2));
 u(1) * sin(x(3)) * cos(u(2));
 u(1)/L * sin(u(2))];
 xdot = x_update;
-%      stato=x,y,teta,psi ingressi=v,w
+%      stato=x,y,teta ingressi=v,w
 
 
     
