@@ -26,7 +26,7 @@ Ts=0.1;%scenario.SampleTime;
 % nlobj.ManipulatedVariables(2).RateMin = -3 ;
 % nlobj.ManipulatedVariables(2).RateMax = 3;
 
-%  nlobj.Weights.ManipulatedVariablesRate(1)=2; 
+  nlobj.Weights.ManipulatedVariablesRate(1)=2; 
 
 % nlobj.Weights.ManipulatedVariablesRate(2)=5;
 % nlobj.ManipulatedVariables(1).MinECR=1;
@@ -112,6 +112,9 @@ for k=1:size(sim_time,1)
     % Stampa la posizione attuale
     plot(xHistory(k,1),xHistory(k,2),'rx')
     params.teta=egoVehicle.Yaw;
+    params.pos(6,:)=pose_record(k).ActorPoses(7).Position(1:2);
+    plot(params.pos(6,1),params.pos(6,2),'go')
+    
     % Ottieni le misure dal plant.
     % Qui dovreste mettere la retroazione. Io ho aggiunto del rumore per 
     % rendere la pianificazione più reale.
