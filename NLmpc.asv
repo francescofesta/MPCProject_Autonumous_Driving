@@ -40,9 +40,9 @@ Ts=0.1;%scenario.SampleTime;
   nlobj.Weights.OutputVariables(1)=2;
   nlobj.Weights.OutputVariables(2)=2;
   nlobj.OutputVariables(1).MinECR=2;
-  nlobj.OutputVariables(1).MaxECR=3;
-  nlobj.OutputVariables(2).MinECR=2;
-  nlobj.OutputVariables(2).MaxECR=3;
+  nlobj.Weights.OutputVariables(1).MaxECR=3;
+  nlobj.Weights.OutputVariables(2).MinECR=2;
+  nlobj.Weights.OutputVariables(2).MaxECR=3;
 
 % nlobj.Weights.OutputVariables(3)=1;
 
