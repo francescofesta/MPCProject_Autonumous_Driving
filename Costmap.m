@@ -79,4 +79,5 @@ teta_goal=str2num(angoli{2});
     plot(startPose(:,1),startPose(:,2),'*');
     hold on
     plot(goalPose(:,1),goalPose(:,2),'o');
+    close
 

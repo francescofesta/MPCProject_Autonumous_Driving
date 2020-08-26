@@ -3,7 +3,7 @@ function cineq = ObstacleAvoidanceFcn(X,U,e,data,params)
 p=data.PredictionHorizon;
 d=sqrt(X(1,1)^2+X(1,2)^2);
 treshold_obstacle=3;
-  for i=1:1:(size(params.pos,1)-1)
+  for i=1:1:(size(params.pos,1))
         
 %         argomento_vecnorm=[X(2:p+1,1)-params.pos(i,1)  X(2:p+1,2)-params.pos(i,2)];
 %         out_vec(i,:)=vecnorm(argomento_vecnorm');

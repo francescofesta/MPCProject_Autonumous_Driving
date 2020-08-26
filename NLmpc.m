@@ -26,7 +26,7 @@ Ts=0.1;%scenario.SampleTime;
 % nlobj.ManipulatedVariables(2).RateMin = -3 ;
 % nlobj.ManipulatedVariables(2).RateMax = 3;
 
-%   nlobj.Weights.ManipulatedVariablesRate(1)=2; 
+  nlobj.Weights.ManipulatedVariablesRate(1)=2; 
 
 % nlobj.Weights.ManipulatedVariablesRate(2)=5;
 % nlobj.ManipulatedVariables(1).MinECR=1;
@@ -84,7 +84,7 @@ nlobj.Optimization.UseSuboptimalSolution = true;
  if (size(params.pos,1)>0)
 %      nlobj.Optimization.CustomIneqConFcn = "CollisionAvoidanceFcn";
       nlobj.Optimization.CustomIneqConFcn = "ObstacleAvoidanceFcn";
-      nlobj.Optimization.CustomEqConFcn = "PedestrianAvoidanceFcn";
+%       nlobj.Optimization.CustomEqConFcn = "PedestrianAvoidanceFcn";
 
  end
 
@@ -120,7 +120,9 @@ for k=1:size(sim_time,1)
     % Stampa la posizione attuale
     plot(xHistory(k,1),xHistory(k,2),'rx')
     params.teta=egoVehicle.Yaw;
-    params.pos(6,:)=pose_record(k).ActorPoses(7).Position(1:2);
+    for j=6:6+min(9,size(sim_time,1)-k)
+        params.pos(j,:)=pose_record(k+j-6).ActorPoses(6).Position(1:2);
+    end
     options.Parameters = {params};
 
     

@@ -24,3 +24,4 @@ plot(scenario,'Waypoints','on','RoadCenters','on')
 while advance(scenario)
     pause(0.1)
 end
+close
