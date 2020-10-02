@@ -38,7 +38,7 @@ toc
 
 %% PLOT SCENARIO PUNTI DI VIA REALI
 % restart(scenario);
-% waypoints=[xHistory(:,1:2)];
+% %waypoints=[xHistory(:,1:2)];
 % trajectory(egoVehicle,waypoints);
 % chasePlot(egoVehicle);
 % plot(scenario,'Waypoints','on','RoadCenters','on')
